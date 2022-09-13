@@ -35,15 +35,6 @@ func main() {
 	commander := commands.NewCommander(bot, productService)
 
 	for update := range updates {
-		if update.Message != nil { // если получаем не пустое сообщение
-			switch update.Message.Command() { // получаем команду из сообщения
-			case "help", "start": // помощь, справочная информация
-				commander.Help(update.Message)
-			case "list":
-				commander.List(update.Message)
-			default: // сообщение без команды
-				commander.Default(update.Message)
-			}
-		}
+		commander.HandleUpdate(update)
 	}
 }

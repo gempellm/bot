@@ -19,3 +19,18 @@ func NewCommander(
 		productService: productService,
 	}
 }
+
+func (c *Commander) HandleUpdate(update tgbotapi.Update) {
+	if update.Message != nil { // если получаем не пустое сообщение
+		switch update.Message.Command() { // получаем команду из сообщения
+		case "help", "start": // помощь, справочная информация
+			c.Help(update.Message)
+		case "list":
+			c.List(update.Message)
+		case "get":
+			c.Get(update.Message)
+		default: // сообщение без команды
+			c.Default(update.Message)
+		}
+	}
+}
