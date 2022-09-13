@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gempellm/bot/internal/service/product"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
 )
@@ -28,11 +29,15 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u) // получаем канал (очередь) сообщений
 
+	productService := product.NewService()
+
 	for update := range updates {
 		if update.Message != nil { // если получаем не пустое сообщение
 			switch update.Message.Command() { // получаем команду из сообщения
-			case "help": // /help
+			case "help", "start": // помощь, справочная информация
 				helpCommand(bot, update.Message)
+			case "list":
+				listCommand(bot, update.Message, productService)
 			default: // сообщение без команды
 				defaultBehaviour(bot, update.Message)
 			}
@@ -41,7 +46,24 @@ func main() {
 }
 
 func helpCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "/help - help")
+	msg := tgbotapi.NewMessage(inputMessage.Chat.ID,
+		"/help - help\n"+
+			"/list - list products",
+	)
+
+	bot.Send(msg)
+}
+
+func listCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message, productService *product.Service) {
+	outputMsgText := "Here are all products: \n\n"
+
+	products := productService.List()
+	for _, p := range products {
+		outputMsgText += p.Title
+		outputMsgText += "\n"
+	}
+
+	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsgText)
 
 	bot.Send(msg)
 }
