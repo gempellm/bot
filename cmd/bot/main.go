@@ -30,12 +30,27 @@ func main() {
 
 	for update := range updates {
 		if update.Message != nil { // если получаем не пустое сообщение
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text) // логируем сообщение
-
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You wrote: "+update.Message.Text) // создаем ответ, указываем id чата и текст сообщения
-			msg.ReplyToMessageID = update.Message.MessageID                                       // указание того, что сообщение - это реплай на предыдущее сообщение
-
-			bot.Send(msg)
+			switch update.Message.Command() { // получаем команду из сообщения
+			case "help": // /help
+				helpCommand(bot, update.Message)
+			default: // сообщение без команды
+				defaultBehaviour(bot, update.Message)
+			}
 		}
 	}
+}
+
+func helpCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
+	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "/help - help")
+
+	bot.Send(msg)
+}
+
+func defaultBehaviour(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
+	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text) // логируем сообщение
+
+	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text) // создаем ответ, указываем id чата и текст сообщения
+	//msg.ReplyToMessageID = update.Message.MessageID                                       // указание того, что сообщение - это реплай на предыдущее сообщение
+
+	bot.Send(msg)
 }
