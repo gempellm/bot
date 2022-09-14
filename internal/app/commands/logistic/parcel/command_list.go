@@ -9,12 +9,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-type CommandData struct {
-	Command string
-	Offset  uint64
-	Limit   uint64
-}
-
 func (c *Commander) List(inputMsg *tgbotapi.Message) {
 	rawArgs := inputMsg.CommandArguments()
 	args := strings.Split(rawArgs, " ")
