@@ -50,14 +50,14 @@ func (s *DummyParcelService) Describe(parcelID uint64) (*logistic.Parcel, error)
 func (s *DummyParcelService) List(offset uint64, limit uint64) ([]logistic.Parcel, error) {
 	parcels := s.getParcels()
 
-	if limit == 1 {
-		return []logistic.Parcel{parcels[offset]}, nil
-	}
-
 	parcelsCount := uint64(len(parcels) - 1)
 
 	if offset > parcelsCount {
 		return []logistic.Parcel{}, nil
+	}
+
+	if limit == 1 {
+		return []logistic.Parcel{parcels[offset]}, nil
 	}
 
 	requestedParcels := make([]logistic.Parcel, 0)

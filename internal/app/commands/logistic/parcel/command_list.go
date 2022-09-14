@@ -1,12 +1,19 @@
 package parcel
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
+
+type CommandData struct {
+	Command string
+	Offset  uint64
+	Limit   uint64
+}
 
 func (c *Commander) List(inputMsg *tgbotapi.Message) {
 	rawArgs := inputMsg.CommandArguments()
@@ -34,5 +41,20 @@ func (c *Commander) List(inputMsg *tgbotapi.Message) {
 	}
 
 	msg := tgbotapi.NewMessage(inputMsg.Chat.ID, msgText)
+
+	if uint64(len(parcels)) == limit {
+		serializedData, _ := json.Marshal(CommandData{
+			Command: "list",
+			Offset:  offset + limit,
+			Limit:   limit,
+		})
+
+		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.NewInlineKeyboardButtonData("Next page", string(serializedData)),
+			),
+		)
+	}
+
 	c.bot.Send(msg)
 }
