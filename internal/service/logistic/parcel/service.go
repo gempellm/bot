@@ -16,9 +16,7 @@ type ParcelService interface {
 	Remove(parcelID uint64) (bool, error)
 }
 
-type DummyParcelService struct {
-	Parcels map[uint64]logistic.Parcel
-}
+type DummyParcelService struct{}
 
 func NewDummyParcelService() *DummyParcelService {
 	return &DummyParcelService{}
@@ -27,14 +25,14 @@ func NewDummyParcelService() *DummyParcelService {
 func (s *DummyParcelService) getParcels() []logistic.Parcel {
 	parcelsData, _ := os.ReadFile("parcels.txt")
 	var parcels []logistic.Parcel
-	json.Unmarshal(parcelsData, parcels)
+	json.Unmarshal(parcelsData, &parcels)
 
 	return parcels
 }
 
 func (s *DummyParcelService) saveParcels(parcels []logistic.Parcel) {
 	parcelsData, _ := json.Marshal(parcels)
-	os.WriteFile("parcels.txt", parcelsData, 666)
+	os.WriteFile("parcels.txt", parcelsData, 0666)
 }
 
 func (s *DummyParcelService) Describe(parcelID uint64) (*logistic.Parcel, error) {
@@ -49,27 +47,30 @@ func (s *DummyParcelService) Describe(parcelID uint64) (*logistic.Parcel, error)
 	return nil, fmt.Errorf("parcel %d not found", parcelID)
 }
 
-func (s *DummyParcelService) List(cursor uint64, limit uint64) ([]logistic.Parcel, error) {
+func (s *DummyParcelService) List(offset uint64, limit uint64) ([]logistic.Parcel, error) {
 	parcels := s.getParcels()
 
-	parcelsLimit := uint64(len(parcels) - 1)
+	if limit == 1 {
+		return []logistic.Parcel{parcels[offset]}, nil
+	}
 
-	if cursor > parcelsLimit {
+	parcelsCount := uint64(len(parcels) - 1)
+
+	if offset > parcelsCount {
 		return []logistic.Parcel{}, nil
 	}
 
-	requestedParcels := make([]logistic.Parcel, limit)
-	j := 0
+	requestedParcels := make([]logistic.Parcel, 0)
+	parcelsLimit := offset + limit
 
-	for i := cursor; i < i+limit; i++ {
-		if i > parcelsLimit {
+	for i := offset; i < parcelsLimit; i++ {
+		if i > parcelsCount {
 			break
 		}
-		requestedParcels[j] = parcels[i]
-		j++
+		requestedParcels = append(requestedParcels, parcels[i])
 	}
 
-	return parcels, nil
+	return requestedParcels, nil
 }
 
 func (s *DummyParcelService) Create(parcel logistic.Parcel) (uint64, error) {

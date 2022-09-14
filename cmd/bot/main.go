@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/gempellm/bot/internal/app/commands"
-	"github.com/gempellm/bot/internal/service/product"
+	commands "github.com/gempellm/bot/internal/app/commands/logistic/parcel"
+	"github.com/gempellm/bot/internal/service/logistic/parcel"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
 )
@@ -30,9 +30,9 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u) // получаем канал (очередь) сообщений
 
-	productService := product.NewService()
+	parcelService := parcel.NewDummyParcelService()
 
-	commander := commands.NewCommander(bot, productService)
+	commander := commands.NewParcelCommander(bot, parcelService)
 
 	for update := range updates {
 		commander.HandleUpdate(update)

@@ -1,5 +1,7 @@
 package product
 
+import "fmt"
+
 var allProducts = []Product{
 	{Title: "one"},
 	{Title: "two"},
@@ -10,4 +12,8 @@ var allProducts = []Product{
 
 type Product struct {
 	Title string
+}
+
+func (p *Product) String() string {
+	return fmt.Sprintf("Product{Title: %v}", p.Title)
 }

@@ -18,5 +18,5 @@ type Parcel struct {
 }
 
 func (p *Parcel) String() string {
-	return fmt.Sprintf("Package{ParcelID: %d, Title: %s}", p.ParcelID, p.Title)
+	return fmt.Sprintf("Parcel{ParcelID: %d, Title: %s}", p.ParcelID, p.Title)
 }
