@@ -3,13 +3,23 @@ package parcel
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func (c *Commander) Delete(inputMsg *tgbotapi.Message) {
-	args := inputMsg.CommandArguments()
-	id, err := strconv.ParseUint(args, 10, 64)
+	rawData := inputMsg.CommandArguments()
+
+	args := strings.Split(rawData, " ")
+
+	for _, arg := range args {
+		c.removeArg(arg, inputMsg)
+	}
+}
+
+func (c *Commander) removeArg(arg string, inputMsg *tgbotapi.Message) {
+	id, err := strconv.ParseUint(arg, 10, 64)
 
 	if err != nil {
 		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, "Wrong input format.")

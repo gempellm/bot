@@ -47,6 +47,8 @@ func (c *Commander) HandleUpdate(update tgbotapi.Update) {
 			c.New(update.Message)
 		case "edit":
 			c.Edit(update.Message)
+		case "list_ids":
+			c.ListIds(update.Message)
 		}
 	}
 }
