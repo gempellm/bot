@@ -11,6 +11,12 @@ import (
 func (c *Commander) Edit(inputMsg *tgbotapi.Message) {
 	rawArgs := inputMsg.CommandArguments()
 	args := strings.Split(rawArgs, " ")
+	if len(args) != 2 {
+		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, "Wrong input format.")
+		c.bot.Send(msg)
+		return
+	}
+
 	parcelID, err := strconv.ParseUint(args[0], 10, 64)
 	if err != nil {
 		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, "Wrong input format.")

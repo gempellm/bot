@@ -17,7 +17,9 @@ func (c *Commander) New(inputMsg *tgbotapi.Message) {
 	args := strings.Split(rawArgs, " ")
 
 	for _, arg := range args {
-		c.saveArg(arg, inputMsg)
+		if len(arg) > 0 {
+			c.saveArg(arg, inputMsg)
+		}
 	}
 
 }

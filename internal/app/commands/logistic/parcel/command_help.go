@@ -11,8 +11,9 @@ func (c *Commander) Help(inputMsg *tgbotapi.Message) {
 		"/help - List all available commands\n",
 		"/get parcel_ID - Get info about parcel\n",
 		"/list index n - Get n parcels from specified index\n",
-		"/delete parcel_ID - Delete parcel with specified parcelID\n",
-		"/new title - Create parcel with specified title\n",
+		"/list_ids - Get list of all parcel ids\n",
+		"/delete parcel_ID1 parcel_ID2... - Delete parcel(s) with specified parcel_ID\n",
+		"/new title1 title2... - Create parcel(s) with specified title\n",
 		"/edit parcel_ID title - Edit parcel's title\n",
 	))
 
