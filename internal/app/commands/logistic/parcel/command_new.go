@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gempellm/bot/internal/model/logistic"
@@ -12,19 +13,21 @@ import (
 )
 
 func (c *Commander) New(inputMsg *tgbotapi.Message) {
-
 	rawArgs := inputMsg.CommandArguments()
 	args := strings.Split(rawArgs, " ")
 
+	mu := &sync.Mutex{}
+
 	for _, arg := range args {
 		if len(arg) > 0 {
-			c.saveArg(arg, inputMsg)
+			go c.saveArg(arg, inputMsg, mu)
 		}
 	}
 
 }
 
-func (c *Commander) saveArg(title string, inputMsg *tgbotapi.Message) {
+func (c *Commander) saveArg(title string, inputMsg *tgbotapi.Message, mu *sync.Mutex) {
+	mu.Lock()
 	var lastID uint64
 	data, _ := os.ReadFile("lastID.txt")
 	lastID, _ = strconv.ParseUint(string(data), 10, 64)
@@ -34,6 +37,7 @@ func (c *Commander) saveArg(title string, inputMsg *tgbotapi.Message) {
 	parcel := logistic.Parcel{Title: title, ParcelID: lastID, Timestamp: time.Now().Unix()}
 
 	parcelID, err := c.parcelService.Create(parcel)
+	mu.Unlock()
 	if err != nil {
 		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, "Error occured during parcel creation.")
 		c.bot.Send(msg)

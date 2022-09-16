@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -13,12 +14,14 @@ func (c *Commander) Delete(inputMsg *tgbotapi.Message) {
 
 	args := strings.Split(rawData, " ")
 
+	mu := &sync.Mutex{}
+
 	for _, arg := range args {
-		c.removeArg(arg, inputMsg)
+		go c.removeArg(arg, inputMsg, mu)
 	}
 }
 
-func (c *Commander) removeArg(arg string, inputMsg *tgbotapi.Message) {
+func (c *Commander) removeArg(arg string, inputMsg *tgbotapi.Message, mu *sync.Mutex) {
 	id, err := strconv.ParseUint(arg, 10, 64)
 
 	if err != nil {
@@ -27,7 +30,10 @@ func (c *Commander) removeArg(arg string, inputMsg *tgbotapi.Message) {
 		return
 	}
 
+	mu.Lock()
 	ok, _ := c.parcelService.Remove(id)
+	mu.Unlock()
+
 	if !ok {
 		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, fmt.Sprintf("Parcel with ID %d not found.", id))
 		c.bot.Send(msg)
