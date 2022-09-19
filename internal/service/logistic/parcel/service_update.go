@@ -1,8 +1,6 @@
 package parcel
 
 import (
-	"fmt"
-
 	"github.com/gempellm/bot/internal/model/logistic"
 )
 
@@ -17,5 +15,5 @@ func (s *DummyParcelService) Update(parcelID uint64, parcel logistic.Parcel) err
 		}
 	}
 
-	return fmt.Errorf("parcel %d not found", parcelID)
+	return logistic.ErrParcelNotFound(parcelID)
 }

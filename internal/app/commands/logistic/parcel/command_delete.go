@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gempellm/bot/internal/model/logistic"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -35,7 +36,7 @@ func (c *Commander) removeArg(arg string, inputMsg *tgbotapi.Message, mu *sync.M
 	mu.Unlock()
 
 	if !ok {
-		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, fmt.Sprintf("Parcel with ID %d not found.", id))
+		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, logistic.StringParcelNotFound(id))
 		c.bot.Send(msg)
 		return
 	}

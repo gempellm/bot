@@ -1,6 +1,6 @@
 package parcel
 
-import "fmt"
+import "github.com/gempellm/bot/internal/model/logistic"
 
 func (s *DummyParcelService) Remove(parcelID uint64) (bool, error) {
 	parcels := s.getParcels()
@@ -13,5 +13,5 @@ func (s *DummyParcelService) Remove(parcelID uint64) (bool, error) {
 		}
 	}
 
-	return false, fmt.Errorf("parcel %d not found", parcelID)
+	return false, logistic.ErrParcelNotFound(parcelID)
 }

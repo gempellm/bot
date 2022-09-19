@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gempellm/bot/internal/model/logistic"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -28,7 +29,7 @@ func (c *Commander) Edit(inputMsg *tgbotapi.Message) {
 
 	parcel, err := c.parcelService.Describe(parcelID)
 	if err != nil {
-		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, fmt.Sprintf("Parcel with ID %d not found.", parcelID))
+		msg := tgbotapi.NewMessage(inputMsg.Chat.ID, logistic.StringParcelNotFound(pracelID))
 		c.bot.Send(msg)
 		return
 	}
